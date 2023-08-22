@@ -29,7 +29,14 @@
 
         <service android:name=".forgroundservice.ForeGroundServiceApp"/>
 
-        <receiver android:name=".BroadcastReceiverApp"/>
+        <receiver android:name=".BroadcastReceiverApp"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

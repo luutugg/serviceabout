@@ -24,6 +24,8 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_prev"
         android:padding="10dp"
+        android:visibility="invisible"
+        tools:visibility="visible"
         android:layout_toLeftOf="@id/ivNotificationPlay"
         android:layout_alignTop="@id/tvNotificationName"
         android:layout_alignBottom="@id/tvNotificationName"/>

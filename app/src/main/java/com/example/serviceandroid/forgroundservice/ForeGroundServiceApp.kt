@@ -26,18 +26,17 @@ class ForeGroundServiceApp : Service() {
 
     private var song: SONG = SONG.SONG_1
 
-    private var actionSong: ACTION_SONG? = ACTION_SONG.PAUSE
+    private var actionSong: ACTION_SONG? = null
 
     override fun onCreate() {
         super.onCreate()
-//        mediaPlayer = MediaPlayer()
+        actionSong = ACTION_SONG.PAUSE
     }
 
     override fun onDestroy() {
         super.onDestroy()
         mediaPlayer?.release()
         mediaPlayer = null
-        Log.d("tunglvvvv", "onDestroy: ")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -65,10 +64,6 @@ class ForeGroundServiceApp : Service() {
         }
         mediaPlayer?.start()
 
-        mediaPlayer?.setOnCompletionListener {
-            actionSong = ACTION_SONG.PAUSE
-            sendNotification(song)
-        }
     }
 
     private fun sendNotification(song: SONG?) {
@@ -85,27 +80,31 @@ class ForeGroundServiceApp : Service() {
                 ACTION_SONG.PAUSE -> {
                     setImageViewResource(
                         R.id.ivNotificationPlay,
-                        R.drawable.ic_play
+                        R.drawable.ic_pause
                     )
                 }
 
                 ACTION_SONG.PLAY -> setImageViewResource(
                     R.id.ivNotificationPlay,
-                    R.drawable.ic_pause
+                    R.drawable.ic_play
                 )
 
                 ACTION_SONG.NEXT -> {
                     if (song?.value!! >= 3) {
                         setViewVisibility(R.id.ivNotificationNext, View.INVISIBLE)
-                        setViewVisibility(R.id.ivNotificationPrev, View.VISIBLE)
+                    }else{
+                        setViewVisibility(R.id.ivNotificationNext, View.VISIBLE)
                     }
+                    setViewVisibility(R.id.ivNotificationPrev, View.VISIBLE)
                 }
 
                 ACTION_SONG.PREV -> {
                     if (song?.value!! <= 1) {
-                        setViewVisibility(R.id.ivNotificationNext, View.VISIBLE)
                         setViewVisibility(R.id.ivNotificationPrev, View.INVISIBLE)
+                    } else {
+                        setViewVisibility(R.id.ivNotificationPrev, View.VISIBLE)
                     }
+                    setViewVisibility(R.id.ivNotificationNext, View.VISIBLE)
                 }
 
                 else -> {}
@@ -119,10 +118,11 @@ class ForeGroundServiceApp : Service() {
             .setCustomContentView(remoteView)
             .build()
 
-        val notificationManager : NotificationManager = getSystemService(NotificationManager::class.java)
-        notificationManager.notify(1,notification)
+        val notificationManager: NotificationManager =
+            getSystemService(NotificationManager::class.java)
+        notificationManager.notify(1, notification)
 
-  //      startForeground(1, notification)
+        //      startForeground(1, notification)
     }
 
     private fun pauseMusic() {
@@ -141,6 +141,7 @@ class ForeGroundServiceApp : Service() {
         val intent = Intent(this, BroadcastReceiverApp::class.java)
         val bundle = bundleOf(SEND_SONG_ACTION_KEY to actionSong)
         intent.putExtras(bundle)
+        intent.action = actionSong.toString()
         return PendingIntent.getBroadcast(
             this,
             actionSong.hashCode(),
