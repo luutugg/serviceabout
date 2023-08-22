@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/tvNotificationName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="10dp"
+        android:gravity="center_vertical"
+        android:textColor="@color/black"
+        tools:text="tên bài hát" />
+
+    <ImageView
+        android:id="@+id/ivNotificationPrev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_prev"
+        android:padding="10dp"
+        android:layout_toLeftOf="@id/ivNotificationPlay"
+        android:layout_alignTop="@id/tvNotificationName"
+        android:layout_alignBottom="@id/tvNotificationName"/>
+
+    <ImageView
+        android:id="@+id/ivNotificationPlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_play"
+        android:padding="10dp"
+        android:layout_toLeftOf="@id/ivNotificationNext"
+        android:layout_alignTop="@id/tvNotificationName"
+        android:layout_alignBottom="@id/tvNotificationName"/>
+
+    <ImageView
+        android:id="@+id/ivNotificationNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_next"
+        android:padding="10dp"
+        android:layout_marginEnd="46dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>
