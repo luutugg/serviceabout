@@ -27,7 +27,18 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".forgroundservice.ForeGroundServiceApp"/>
+        <service android:name=".unboundservice.UnBoundServiceApp"/>
+        <service android:name=".boundservice.BoundServiceApp"/>
+
+        <service android:name=".boundservice.SubBoundService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </service>
 
         <receiver android:name=".BroadcastReceiverApp"
             android:exported="true">
@@ -37,6 +48,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </receiver>
+
     </application>
 
 </manifest>
