@@ -43,7 +43,7 @@ class BoundServiceApp : Service() {
     override fun onCreate() {
         super.onCreate()
         boundBinder = BoundBinder()
-
+        Log.d("Boundservice", "onCreate: ")
         actionSong = ACTION_SONG.PAUSE
         handler = Handler(Looper.myLooper()!!)
         mediaPlayer = MediaPlayer.create(this, R.raw.file1)
@@ -52,65 +52,72 @@ class BoundServiceApp : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        mediaPlayer?.release()
+        mediaPlayer = null
+        listener = null
+        if (runnale != null) {
+            handler?.removeCallbacks(runnale!!)
+        }
         Log.d("Boundservice", "onDestroy: ")
     }
 
     override fun onBind(intent: Intent?): IBinder? {
-
+        Log.d("Boundservice", "onBind: ")
         sendNotification(song)
-        actionSong = (intent?.getSerializableExtra(MainActivity.RECEIVER_SONG_ACTION_KEY) as? ACTION_SONG)
-        handleMusic(actionSong)
-
         return boundBinder
     }
 
-    private fun startMedia(song: SONG?) {
-        if (currentSong != song) {
-            when (song) {
-                SONG.SONG_1 -> {
-                    mediaPlayer?.reset()
-                    mediaPlayer?.setDataSource(
-                        applicationContext,
-                        Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.file1)
-                    );
-                    mediaPlayer?.prepare();
-                }
-
-                SONG.SONG_2 -> {
-                    mediaPlayer?.reset()
-                    mediaPlayer?.setDataSource(
-                        applicationContext,
-                        Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.file2)
-                    );
-                    mediaPlayer?.prepare();
-                }
-
-                SONG.SONG_3 -> {
-                    mediaPlayer?.reset()
-                    mediaPlayer?.setDataSource(
-                        applicationContext,
-                        Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.file3)
-                    );
-                    mediaPlayer?.prepare();
-                }
-
-                else -> {}
-            }
-            currentSong = song
+    fun startMedia(song: SONG?) {
+        if (mediaPlayer == null) {
+            mediaPlayer = MediaPlayer()
         }
-        mediaPlayer?.setOnPreparedListener {
-            runnale = object : Runnable {
-                override fun run() {
-                    listener?.onProgress(
-                        current = mediaPlayer!!.currentPosition,
-                        max = mediaPlayer!!.duration
-                    )
-                    handler?.postDelayed(this, 1000)
-                }
+        when (song) {
+            SONG.SONG_1 -> {
+                mediaPlayer?.reset()
+                mediaPlayer?.setDataSource(
+                    applicationContext,
+                    Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.file1)
+                );
+                mediaPlayer?.prepare();
             }
-            handler?.postDelayed(runnale!!, 1000)
+
+            SONG.SONG_2 -> {
+                mediaPlayer?.reset()
+                mediaPlayer?.setDataSource(
+                    applicationContext,
+                    Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.file2)
+                );
+                mediaPlayer?.prepare();
+            }
+
+            SONG.SONG_3 -> {
+                mediaPlayer?.reset()
+                mediaPlayer?.setDataSource(
+                    applicationContext,
+                    Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.file3)
+                );
+                mediaPlayer?.prepare();
+            }
+
+            else -> {}
+        }
+        currentSong = song
+
+        mediaPlayer?.setOnPreparedListener {
+
         }
         mediaPlayer?.start()
+
+        runnale = object : Runnable {
+            override fun run() {
+                listener?.onProgress(
+                    current = mediaPlayer?.currentPosition ?: 0,
+                    max = mediaPlayer?.duration ?: 0
+                )
+                handler?.postDelayed(this, 1000)
+            }
+        }
+        handler?.postDelayed(runnale!!, 1000)
     }
 
     private fun sendNotification(song: SONG?) {
@@ -265,7 +272,7 @@ class BoundServiceApp : Service() {
         startMedia(song)
     }
 
-    private fun handleMusic(actionSong: ACTION_SONG?) {
+    fun handleMusic(actionSong: ACTION_SONG?) {
         when (actionSong) {
             ACTION_SONG.PLAY -> {
                 resumeMusic()

@@ -36,9 +36,11 @@ class MainActivity : AppCompatActivity(), IEventHandler {
 
     private var startBound = false
 
-    private var serviceConnection : ServiceConnection= object : ServiceConnection {
+    private var serviceBound: BoundServiceApp? = null
+
+    private var serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            val serviceBound = (service as? BoundServiceApp.BoundBinder)?.getBoundService()
+            serviceBound = (service as? BoundServiceApp.BoundBinder)?.getBoundService()
             serviceBound?.listener = object : BoundServiceApp.IBoundServiceListener {
                 override fun onProgress(current: Int, max: Int) {
                     if (current != 0) {
@@ -97,19 +99,17 @@ class MainActivity : AppCompatActivity(), IEventHandler {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     override fun onEvent(event: IEvent) {
         when (event) {
-//            is PostData -> {
-//                if (event.currentPosition != 0) {
-//                    binding.sbMain.progress = event.currentPosition
-//                }
-//                binding.sbMain.max = event.maxPosition
-//                EventBusManager.instance?.removeSticky(event)
-//            }
+            is PostData -> {
+                if (event.currentPosition != 0) {
+                    binding.sbMain.progress = event.currentPosition
+                }
+                binding.sbMain.max = event.maxPosition
+                EventBusManager.instance?.removeSticky(event)
+            }
 
             is SendToService -> {
-                val intent = Intent(this, BoundServiceApp::class.java)
-                val bundle = bundleOf(RECEIVER_SONG_ACTION_KEY to event.actionSong)
-                intent.putExtras(bundle)
-                bindService(intent, serviceConnection, BIND_AUTO_CREATE)
+//                binding.sbMain.progress = 0
+                serviceBound?.handleMusic(event.actionSong)
                 EventBusManager.instance?.removeSticky(event)
             }
         }
@@ -127,7 +127,7 @@ class MainActivity : AppCompatActivity(), IEventHandler {
             bindService(intent, serviceConnection, BIND_AUTO_CREATE)
             binding.btnMainBound.text = "stop bound"
         } else {
-            // unbindService(serviceConnection)
+            unbindService(serviceConnection)
             isConnectedBound = false
             binding.btnMainBound.text = "bound service"
             binding.sbMain.progress = 0
