@@ -108,7 +108,6 @@ class MainActivity : AppCompatActivity(), IEventHandler {
             }
 
             is SendToService -> {
-//                binding.sbMain.progress = 0
                 serviceBound?.handleMusic(event.actionSong)
                 EventBusManager.instance?.removeSticky(event)
             }
