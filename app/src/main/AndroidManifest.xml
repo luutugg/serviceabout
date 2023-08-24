@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -18,7 +17,7 @@
         android:theme="@style/Theme.ServiceAndroid"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".MainActivity2"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,10 +25,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="false">
+
+        </activity>
 
         <service android:name=".unboundservice.UnBoundServiceApp" />
         <service android:name=".boundservice.BoundServiceApp" />
-
         <service
             android:name=".boundservice.SubBoundService"
             android:exported="true">
@@ -38,13 +41,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </service>
-
         <service
             android:name=".jobservice.JobServiceApp"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-
 
         <receiver
             android:name=".BroadcastReceiverApp"
@@ -55,7 +55,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>

@@ -34,6 +34,10 @@ class JobServiceApp : JobService() {
 
     private val TAG = "JobServiceApp"
 
+    private var thread: Thread? = null
+
+    @Volatile var stopThread = false
+
 
     override fun onCreate() {
         super.onCreate()
@@ -43,10 +47,13 @@ class JobServiceApp : JobService() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy: ")
+        stopThread = true
+        thread = null
     }
 
     override fun onStartJob(params: JobParameters?): Boolean {
         id++
+        stopThread = false
         doWork(params)
 //        jobFinished(params, true)
         return true
@@ -68,12 +75,16 @@ class JobServiceApp : JobService() {
             getSystemService(NotificationManager::class.java)
         notificationManager.notify(id, notification)
 
-        Thread {
+        thread = Thread {
             for (i in 0 until 20){
+                if (stopThread){
+                    return@Thread
+                }
                 Log.d(TAG, "doWork: $i")
                 Thread.sleep(1000)
             }
             jobFinished(params,true)
-        }.start()
+        }
+        thread?.start()
     }
 }

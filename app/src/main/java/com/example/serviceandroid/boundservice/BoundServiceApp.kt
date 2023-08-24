@@ -18,6 +18,7 @@ import androidx.core.os.bundleOf
 import com.example.serviceandroid.BroadcastReceiverApp
 import com.example.serviceandroid.MainActivity
 import com.example.serviceandroid.R
+import com.example.serviceandroid.START_SERVICE
 import com.example.serviceandroid.ServiceApplication
 import com.example.serviceandroid.model.ACTION_SONG
 import com.example.serviceandroid.model.SONG
@@ -252,7 +253,7 @@ class BoundServiceApp : Service() {
 
     private fun getPendingIntent(actionSong: ACTION_SONG?): PendingIntent {
         val intent = Intent(this, BroadcastReceiverApp::class.java)
-        val bundle = bundleOf(MainActivity.SEND_SONG_ACTION_KEY to actionSong)
+        val bundle = bundleOf(MainActivity.SEND_SONG_ACTION_KEY to actionSong, START_SERVICE to 1)
         intent.putExtras(bundle)
         return PendingIntent.getBroadcast(
             this,

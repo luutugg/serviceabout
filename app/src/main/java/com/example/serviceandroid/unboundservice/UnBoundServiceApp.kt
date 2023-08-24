@@ -18,6 +18,7 @@ import com.example.serviceandroid.BroadcastReceiverApp
 import com.example.serviceandroid.MainActivity.Companion.RECEIVER_SONG_ACTION_KEY
 import com.example.serviceandroid.MainActivity.Companion.SEND_SONG_ACTION_KEY
 import com.example.serviceandroid.R
+import com.example.serviceandroid.START_SERVICE
 import com.example.serviceandroid.ServiceApplication
 import com.example.serviceandroid.eventbus.EventBusManager
 import com.example.serviceandroid.eventbus.event.PostData
@@ -50,12 +51,13 @@ class UnBoundServiceApp : Service() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d("tunglvvv", "onDestroy: ")
-        mediaPlayer?.release()
-        mediaPlayer = null
         if (runnale != null) {
             handler?.removeCallbacks(runnale!!)
             runnale = null
+            handler = null
         }
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -103,21 +105,20 @@ class UnBoundServiceApp : Service() {
             }
             currentSong = song
         }
-        mediaPlayer?.setOnPreparedListener {
-            runnale = object : Runnable {
-                override fun run() {
-                    EventBusManager.instance?.postPending(
-                        PostData(
-                            currentPosition = mediaPlayer!!.currentPosition,
-                            maxPosition = mediaPlayer!!.duration
-                        )
-                    );
-                    handler?.postDelayed(this, 1000)
-                }
-            }
-            handler?.postDelayed(runnale!!, 1000)
-        }
         mediaPlayer?.start()
+
+        runnale = object : Runnable {
+            override fun run() {
+                EventBusManager.instance?.postPending(
+                    PostData(
+                        currentPosition = mediaPlayer?.currentPosition?: 0,
+                        maxPosition = mediaPlayer?.duration?: 0
+                    )
+                );
+                handler?.postDelayed(this, 1000)
+            }
+        }
+        handler?.postDelayed(runnale!!, 1000)
     }
 
     private fun sendNotification(song: SONG?) {
@@ -252,9 +253,8 @@ class UnBoundServiceApp : Service() {
 
     private fun getPendingIntent(actionSong: ACTION_SONG?): PendingIntent {
         val intent = Intent(this, BroadcastReceiverApp::class.java)
-        val bundle = bundleOf(SEND_SONG_ACTION_KEY to actionSong)
+        val bundle = bundleOf(SEND_SONG_ACTION_KEY to actionSong , START_SERVICE to 2)
         intent.putExtras(bundle)
-        intent.action = actionSong.toString()
         return PendingIntent.getBroadcast(
             this,
             actionSong.hashCode(),
