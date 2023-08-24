@@ -1,6 +1,8 @@
 package com.example.serviceandroid
 
 import android.app.NotificationManager
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
@@ -15,6 +17,7 @@ import com.example.serviceandroid.eventbus.IEvent
 import com.example.serviceandroid.eventbus.IEventHandler
 import com.example.serviceandroid.eventbus.event.PostData
 import com.example.serviceandroid.eventbus.event.SendToService
+import com.example.serviceandroid.jobservice.JobServiceApp
 import com.example.serviceandroid.unboundservice.UnBoundServiceApp
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -37,6 +40,8 @@ class MainActivity : AppCompatActivity(), IEventHandler {
     private var startBound = false
 
     private var serviceBound: BoundServiceApp? = null
+
+    private var startJob = false
 
     private var serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -68,6 +73,10 @@ class MainActivity : AppCompatActivity(), IEventHandler {
 
         binding.btnMainBound.setOnClickListener {
             startBoundService()
+        }
+
+        binding.btnMainBackGround.setOnClickListener {
+            startJob()
         }
     }
 
@@ -131,6 +140,24 @@ class MainActivity : AppCompatActivity(), IEventHandler {
             binding.btnMainBound.text = "bound service"
             binding.sbMain.progress = 0
             removeNotify()
+        }
+    }
+
+    private fun startJob(){
+        startJob = !startJob
+        val jobScheduler: JobScheduler = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
+        if (startJob){
+            val componentName = ComponentName(this,JobServiceApp::class.java)
+            val jobInfo = JobInfo.Builder(123,componentName)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                .setPersisted(true)
+                .setOverrideDeadline(1)
+                .build()
+            jobScheduler.schedule(jobInfo)
+            binding.btnMainBackGround.text = "stop back"
+        }else{
+            binding.btnMainBackGround.text = "start back"
+            jobScheduler.cancel(123)
         }
     }
 }

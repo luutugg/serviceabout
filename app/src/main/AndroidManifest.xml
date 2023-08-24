@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
@@ -27,10 +27,11 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".unboundservice.UnBoundServiceApp"/>
-        <service android:name=".boundservice.BoundServiceApp"/>
+        <service android:name=".unboundservice.UnBoundServiceApp" />
+        <service android:name=".boundservice.BoundServiceApp" />
 
-        <service android:name=".boundservice.SubBoundService"
+        <service
+            android:name=".boundservice.SubBoundService"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,7 +41,13 @@
 
         </service>
 
-        <receiver android:name=".BroadcastReceiverApp"
+        <service
+            android:name=".jobservice.JobServiceApp"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+
+        <receiver
+            android:name=".BroadcastReceiverApp"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
